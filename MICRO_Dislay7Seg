@@ -1,0 +1,87 @@
+#include "pic18f452.h"
+
+// Definição de parâmetros e constantes
+#define timer   1000
+#define D3      PORTCbits.RC3
+#define D2      PORTCbits.RC2
+#define D1      PORTCbits.RC1
+#define D0      PORTCbits.RC0
+#define A0      PORTAbits.RA3
+#define A1      PORTAbits.RA2
+#define seg_DP  PORTDbits.RD0
+
+
+void main(void) {
+
+    // Definição dos pinos de I/O
+    TRISDbits.TRISD1 = 0;
+    TRISDbits.TRISD0 = 0;
+    TRISCbits.TRISC3 = 0;
+    TRISCbits.TRISC2 = 0;
+    TRISCbits.TRISC1 = 0;
+    TRISCbits.TRISC0 = 0;
+    TRISAbits.TRISA3 = 0;
+    TRISAbits.TRISA2 = 0;
+    
+    volatile char num = 0;
+    volatile char num1 = 0;
+    volatile char num2 = 0;
+    volatile char num3 = 0;
+    volatile char cont = 0;
+    
+    while (1) {
+
+        A0 = 1;
+        A1 = 1;
+            D3 = num & 0x01;
+            D2 = (num >> 1) & 0x01;
+            D1 = (num >> 2) & 0x01;
+            D0 = (num >> 3) & 0x01;
+        __delay_ms(30);
+        
+        A0 = 0;
+        A1 = 1;
+            D3 = num1 & 0x01;
+            D2 = (num1 >> 1) & 0x01;
+            D1 = (num1 >> 2) & 0x01;
+            D0 = (num1 >> 3) & 0x01;
+        __delay_ms(30);
+        
+        A0 = 1;
+        A1 = 0;
+            D3 = num2 & 0x01;
+            D2 = (num2 >> 1) & 0x01;
+            D1 = (num2 >> 2) & 0x01;
+            D0 = (num2 >> 3) & 0x01;
+        __delay_ms(30);
+        
+        A0 = 0;
+        A1 = 0;
+            D3 = num3 & 0x01;
+            D2 = (num3 >> 1) & 0x01;
+            D1 = (num3>> 2) & 0x01;
+            D0 = (num3 >> 3) & 0x01;
+        __delay_ms(30);
+        
+        cont++;
+        if(cont==3){
+            num++;
+            if(num>9){
+                num = 0;
+                num1++;
+                if(num1>9){
+                    num1 = 0;
+                    num2++;
+                    if(num2>9){
+                        num2 = 0;
+                        num3++;
+                        if(num3>9){
+                            num3 = 0;
+                        }
+                    }
+                }
+            }
+            cont = 0;
+        }
+    }      
+}
