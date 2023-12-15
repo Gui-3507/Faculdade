@@ -5,7 +5,7 @@
  * Created on 20 de Novembro de 2023, 19:21
  */
 
-
+  
 #include "pic18f452.h"
 #define led1 PORTDbits.RD2
 #define led2 PORTCbits.RC4
