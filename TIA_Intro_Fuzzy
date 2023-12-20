@@ -70,8 +70,8 @@ plot(T,C)
 plot(T,D)
 plot(T,E)
 
-% Retorna conjunto Fuzzy
-disp('*** CONJUNTO FUZZY ***');
+% Retorna conjunto Fuzzy Ativo
+disp('*** CONJUNTO FUZZY ATIVO ***');
 x=input('Insira um valor: ');
 a = 0;
 vet = [];
@@ -119,17 +119,14 @@ disp('');
 disp('*** GRAU DE PERTINENCIA ***');
 x=input('Insira o conjunto Fuzzy: ');
 vet1 = [];
-i=1;
-while i<=1000
+m=1;
+for i=1:1000
   if x(i) > 0.001
-    vet1(1,i) = round(T(i));
-    vet1(2,i) = x(i);
-    i++;
-  else
-    i++;
-
+    vet1(1,m) = round(T(i));
+    vet1(2,m) = x(i);
+    m++;
   endif
-endwhile
+endfor
 [a, b] = unique(vet1(1,:));
 vet1_1 = [a; vet1(2,b)];
 disp('Elemento    |  Grau de pertinencia');
@@ -142,9 +139,11 @@ disp('*** CORTE ALFA ***');
 x=input('Escolha um conjunto: ');
 y=input('Escolha um grau de pertinencia: ');
 vet2 = [];
+m=1;
 for i=1:1000
   if x(i) >= y+0.01
-    vet2(i) = round(T(i));
+    vet2(m) = round(T(i));
+    m++;
   endif
 endfor
 vet2_2 = unique(vet2);
@@ -159,11 +158,12 @@ x=input('Digite o primeiro conjunto: ');
 y=input('Digite o segundo conjunto: ');
 vet3 = [];
 for i=1:1000
-  if x(i) > 0 || y(i) > 0
+    if x(i) > 0 || y(i) > 0
     vet3(i) = max(x(i),y(i));
-  endif
+    endif
 endfor
-disp(vet3');
+figure; hold on
+plot(vet3);
 
 % Intersecção Fuzzy
 disp('');
@@ -173,11 +173,12 @@ x=input('Digite o primeiro conjunto: ');
 y=input('Digite o segundo conjunto: ');
 vet4 = [];
 for i=1:1000
-  if x(i) > 0 || y(i) > 0
+    if x(i) > 0 || y(i) > 0
     vet4(i) = min(x(i),y(i));
-  endif
+    endif
 endfor
-disp(vet4');
+figure; hold on
+plot(vet4);
 
 % Complemento Fuzzy
 disp('');
@@ -186,12 +187,87 @@ disp('*** COMPLEMENTOS DE CONJUNTOS FUZZY ***');
 x=input('Digite o conjunto: ');
 vet4 = [];
 for i=1:1000
-  if x(i) > 0
+    if x(i) > 0
     vet4(i) = 1-x(i);
-  endif
+    endif
 endfor
-disp(vet4');
+figure; hold on
+plot(vet4);
 
 % União de conjuntos ativos
+disp('');
+disp('');
+disp('*** CONJUNTO FUZZY ATIVO ***');
+x=input('Insira um valor: ');
+a = 0;
+l=1;
+vet5 = [];
+for i=1:1000
+  if (T(i)-(x+0.1)) < 0.05
+    a=i;
+  endif
+endfor
+if 0 <= a && a <= 300
+  vet5(l,:) = A;
+  l++;
+endif
+if 100 <= a && a <= 500
+  vet5(l,:) = B;
+  l++;
+endif
+if 300 <= a && a <= 700
+  vet5(l,:) = C;
+  l++;
+endif
+if 500 <= a && a <= 900
+  vet5(l,:) = D;
+  l++;
+endif
+if 700 <= a && a <= 1000
+  vet5(l,:) = E;
+  l++;
+endif
+vet5_5 = [];
+vet5_5 = max(vet5(1,:),vet5(2,:));
+figure; hold on
+plot(vet5_5);
+
+% Interseccao de conjuntos ativos
+disp('');
+disp('');
+disp('*** CONJUNTO FUZZY ATIVO ***');
+x=input('Insira um valor: ');
+a = 0;
+l=1;
+vet6 = [];
+for i=1:1000
+  if (T(i)-(x+0.1)) < 0.05
+    a=i;
+  endif
+endfor
+if 0 <= a && a <= 300
+  vet6(l,:) = A;
+  l++;
+endif
+if 100 <= a && a <= 500
+  vet6(l,:) = B;
+  l++;
+endif
+if 300 <= a && a <= 700
+  vet6(l,:) = C;
+  l++;
+endif
+if 500 <= a && a <= 900
+  vet6(l,:) = D;
+  l++;
+endif
+if 700 <= a && a <= 1000
+  vet6(l,:) = E;
+  l++;
+endif
+vet6_6 = [];
+vet6_6 = min(vet5(1,:),vet5(2,:));
+figure; hold on
+plot(vet6_6);
 
 
