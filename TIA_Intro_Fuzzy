@@ -1,0 +1,197 @@
+clc
+clear all
+close all
+
+warning('off','all')
+
+% Universo de discurso e grau de pertinencia
+T = linspace(0,50,1000);
+P = linspace(0,10,1000);
+
+
+% Conjuntos Fuzzy
+A = [];
+B = [];
+C = [];
+D = [];
+E = [];
+
+% Definição dos conjuntos
+for i=1:1000
+  if T(i) <= 5
+    A(i) = 1;
+    B(i) = 0;
+    C(i) = 0;
+    D(i) = 0;
+    E(i) = 0;
+  endif
+  if T(i) > 5 && T(i) <= 15
+    A(i) = (15-T(i))/(15-5);
+    B(i) = (T(i)-5)/(15-5);
+    C(i) = 0;
+    D(i) = 0;
+    E(i) = 0;
+  endif
+  if T(i) > 15 && T(i) <= 25
+    A(i) = 0;
+    B(i) = (25-T(i))/(25-15);
+    C(i) = (T(i)-15)/(25-15);
+    D(i) = 0;
+    E(i) = 0;
+  endif
+  if T(i) > 25 && T(i) <= 35
+    A(i) = 0;
+    B(i) = 0;
+    C(i) = (35-T(i))/(35-25);
+    D(i) = (T(i)-25)/(35-25);
+    E(i) = 0;
+  endif
+  if T(i) > 35 && T(i) <= 45
+    A(i) = 0;
+    B(i) = 0;
+    C(i) = 0;
+    D(i) = (45-T(i))/(45-35);
+    E(i) = (T(i)-35)/(45-35);
+  endif
+  if T(i) > 45 && T(i) <= 50
+    A(i) = 0;
+    B(i) = 0;
+    C(i) = 0;
+    D(i) = 0;
+    E(i) = 1;
+  endif
+endfor
+
+% Plota os conjuntos
+figure;hold on
+plot(T,A)
+plot(T,B)
+plot(T,C)
+plot(T,D)
+plot(T,E)
+
+% Retorna conjunto Fuzzy
+disp('*** CONJUNTO FUZZY ***');
+x=input('Insira um valor: ');
+a = 0;
+vet = [];
+b = 1;
+for i=1:1000
+  if (T(i)-(x+0.1)) < 0.05
+    a=i;
+  endif
+endfor
+if 0 <= a && a <= 300
+  vet(b) = "A";
+  b++;
+  vet(b) = " ";
+  b++;
+endif
+if 100 <= a && a <= 500
+  vet(b) = "B";
+  b++;
+  vet(b) = " ";
+  b++;
+endif
+if 300 <= a && a <= 700
+  vet(b) = "C";
+  b++;
+  vet(b) = " ";
+  b++;
+endif
+if 500 <= a && a <= 900
+  vet(b) = "D";
+  b++;
+  vet(b) = " ";
+  b++;
+endif
+if 700 <= a && a <= 1000
+  vet(b) = "E";
+  b++;
+  vet(b) = " ";
+  b++;
+endif
+disp(['Os conjunto ativos são: ' vet]);
+
+% Retorna grau de pertinência
+disp('');
+disp('');
+disp('*** GRAU DE PERTINENCIA ***');
+x=input('Insira o conjunto Fuzzy: ');
+vet1 = [];
+i=1;
+while i<=1000
+  if x(i) > 0.001
+    vet1(1,i) = round(T(i));
+    vet1(2,i) = x(i);
+    i++;
+  else
+    i++;
+
+  endif
+endwhile
+[a, b] = unique(vet1(1,:));
+vet1_1 = [a; vet1(2,b)];
+disp('Elemento    |  Grau de pertinencia');
+disp(vet1_1');
+
+% Retorna corte alfa
+disp('');
+disp('');
+disp('*** CORTE ALFA ***');
+x=input('Escolha um conjunto: ');
+y=input('Escolha um grau de pertinencia: ');
+vet2 = [];
+for i=1:1000
+  if x(i) >= y+0.01
+    vet2(i) = round(T(i));
+  endif
+endfor
+vet2_2 = unique(vet2);
+disp('Conjunto crisp que representa o corte alfa: ');
+disp(vet2_2');
+
+% União Fuzzy
+disp('');
+disp('');
+disp('*** UNIÃO DE CONJUNTOS FUZZY ***');
+x=input('Digite o primeiro conjunto: ');
+y=input('Digite o segundo conjunto: ');
+vet3 = [];
+for i=1:1000
+  if x(i) > 0 || y(i) > 0
+    vet3(i) = max(x(i),y(i));
+  endif
+endfor
+disp(vet3');
+
+% Intersecção Fuzzy
+disp('');
+disp('');
+disp('*** INTERSECCÃO DE CONJUNTOS FUZZY ***');
+x=input('Digite o primeiro conjunto: ');
+y=input('Digite o segundo conjunto: ');
+vet4 = [];
+for i=1:1000
+  if x(i) > 0 || y(i) > 0
+    vet4(i) = min(x(i),y(i));
+  endif
+endfor
+disp(vet4');
+
+% Complemento Fuzzy
+disp('');
+disp('');
+disp('*** COMPLEMENTOS DE CONJUNTOS FUZZY ***');
+x=input('Digite o conjunto: ');
+vet4 = [];
+for i=1:1000
+  if x(i) > 0
+    vet4(i) = 1-x(i);
+  endif
+endfor
+disp(vet4');
+
+% União de conjuntos ativos
+
+
