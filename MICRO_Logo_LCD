@@ -1,0 +1,69 @@
+
+// DEFINIÇÃO DE PARÂMETROS E CONSTANTES ________________________________________
+#define timer   5000
+#define LED     PORTDbits.RD2
+
+// INCLUSÃO DE BIBLIOTECAS _____________________________________________________
+#include "pic18f452.h"
+#include "LCD16x2_v1.h"
+
+// NOVOS CARACTERES ____________________________________________________________
+
+const char sec1_1[] = {0x00, 0x00, 0x01, 0x02, 0x06, 0x0C, 0x0C, 0x1E, '\n'};
+
+const char sec2_1[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, '\n'};
+
+const char sec3_1[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x07, 0x1F, '\n'};
+
+const char sec4_1[] = {0x00, 0x00, 0x00, 0x00, 0x07, 0x1C, 0x18, 0x00, '\n'};
+
+const char sec1_2[] = {0x1F, 0x1F, 0x1F, 0x0F, 0x07, 0x00, 0x00, 0x00, '\n'};
+
+const char sec2_2[] = {0x1F, 0x1F, 0x1F, 0x1C, 0x10, 0x00, 0x00, 0x00, '\n'};
+
+const char sec3_2[] = {0x1F, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, '\n'};
+
+// ROTINA PRINCIPAL ____________________________________________________________
+
+void main(void) {
+    
+    // TRISB e PORTB garantindo que o display 7 seg permaneça apagado
+    TRISB = 0x00;
+    PORTB = 0xFF;
+
+    Inicializa_LCD();
+
+    do {
+        Limpa_display_LCD();
+        Escreve_texto_LCD("DEE - MICRO/2023");
+        Escreve_texto_LCD_com_pos(2, 1, "GUILHERME");
+        __delay_ms(timer);
+        Limpa_display_LCD();
+        Escreve_texto_LCD("****FIRMWARE****");
+        Escreve_texto_LCD_com_pos(2, 1, "LOGOMARCA - NIKE");
+        __delay_ms(timer);
+        Limpa_display_LCD();
+        Novo_caractere_LCD(0, sec1_1);
+        Posicao_LCD(1, 7);
+        Envia_dado_LCD(0);
+        Novo_caractere_LCD(1, sec2_1);
+        Posicao_LCD(1, 8);
+        Envia_dado_LCD(1);
+        Novo_caractere_LCD(2, sec3_1);
+        Posicao_LCD(1, 9);
+        Envia_dado_LCD(2);
+        Novo_caractere_LCD(3, sec4_1);
+        Posicao_LCD(1, 10);
+        Envia_dado_LCD(3);
+        Novo_caractere_LCD(4, sec1_2);
+        Posicao_LCD(2, 7);
+        Envia_dado_LCD(4);
+        Novo_caractere_LCD(5, sec2_2);
+        Posicao_LCD(2, 8);
+        Envia_dado_LCD(5);
+        Novo_caractere_LCD(6, sec3_2);
+        Posicao_LCD(2, 9);
+        Envia_dado_LCD(6);
+        __delay_ms(timer);
+    } while (1);
+}
