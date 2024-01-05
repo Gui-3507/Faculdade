@@ -1,0 +1,84 @@
+// DEFINIÇÃO DE PARÂMETROS E CONSTANTES ________________________________________
+#pragma config OSC = HS
+#pragma config WDT = OFF
+#pragma config LVP = OFF
+
+#define _XTAL_FREQ  20000000
+#define timer       2000
+
+// INCLUSÃO DE BIBLIOTECAS _____________________________________________________
+#include <xc.h>
+#include "pic18f452.h"
+#include "LCD16x2_v1.h"
+#include <string.h>
+
+//SUBROTINAS
+
+const char pacmanopene[] = {0x0E, 0x07, 0x03, 0x01, 0x03, 0x07, 0x0E, 0x00, '\n'};
+
+const char pacmanshute[] = {0x00, 0x0E, 0x1F, 0x01, 0x1F, 0x0E, 0x00, 0x00, '\n'};
+
+const char pacmanopend[] = {0x0E, 0x1C, 0x18, 0x10, 0x18, 0x1C, 0x0E, 0x00, '\n'};
+
+const char pacmanshutd[] = {0x00, 0x0E, 0x1F, 0x10, 0x1F, 0x0E, 0x00, 0x00, '\n'};
+
+const char men1[] = " ***FIRMWARE***";
+
+const char men2[] = "PACMAN EATING... ";
+
+void pacman(void){
+    for(int x=1; x<=16; x++){
+        Escreve_texto_LCD_com_pos(1, 1, men1+16-x);
+        Escreve_texto_LCD_com_pos(2, 17-x, men2);
+        __delay_ms(250);
+    }
+    __delay_ms(1000);
+    for(int y=1; y<=17; y++){
+            Novo_caractere_LCD(0, pacmanopend);
+            Posicao_LCD(1,y);
+            Envia_dado_LCD(0);
+            Escreve_texto_LCD_com_pos(1, y-1, " ");
+            Novo_caractere_LCD(1, pacmanopene);
+            Posicao_LCD(2,17-y);
+            Envia_dado_LCD(1);
+            Escreve_texto_LCD_com_pos(2,18-y," ");
+            __delay_ms(100);
+            Novo_caractere_LCD(2, pacmanshutd);
+            Posicao_LCD(1,y);
+            Envia_dado_LCD(2);
+            Escreve_texto_LCD_com_pos(1, y-1, " ");
+            Novo_caractere_LCD(3, pacmanshute);
+            Posicao_LCD(2,17-y);
+            Envia_dado_LCD(3);
+            Escreve_texto_LCD_com_pos(2,18-y," ");
+            __delay_ms(150);
+    }
+}
+
+// ROTINA PRINCIPAL ____________________________________________________________
+void main(void) {
+    
+    // Definição dos pinos de I/O
+    TRISB = 0x00;   // Todos como saídas
+    PORTB = 0xFF;   // Serve para limpar o display de 7 seg
+
+    Inicializa_LCD(); // Inicializa o LCD
+    TRISAbits.TRISA2 = 0; // Liga o LED
+    PORTA = 0x00;
+    PORTAbits.RA2 = 1;
+    
+    // Laço infinito
+    for (;;) {
+        //PORTDbits.RD2 = 0;
+        Limpa_display_LCD();
+        Escreve_texto_LCD("DEE - MICRO/2023");
+        Posicao_LCD(2, 1);
+        Escreve_texto_LCD("NOME:  Guilherme"); 
+        __delay_ms(timer);
+        Limpa_display_LCD();
+        pacman();
+        __delay_ms(1000);
+        
+    }
+    return;
+}
