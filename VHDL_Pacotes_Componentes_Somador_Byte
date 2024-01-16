@@ -1,0 +1,82 @@
+--MEIO SOMADOR
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity meioSomador is 
+	port(x, z : in std_logic;
+		y, t : out std_logic);
+end entity meioSomador;
+
+architecture meioSomador_arch of meioSomador is
+begin
+	
+		y <= x xor z;
+		t <= x and z;
+
+end meioSomador_arch;
+
+
+
+--SOMADOR COMPLETO
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity Somador is
+	port(x, z, w : in std_logic;
+		y, t : out std_logic);
+end entity Somador;
+
+architecture Somador_arch of Somador is
+begin 
+
+		y <= x xor w xor z;
+		t <= (x and w) or (x and z) or (z and w);
+		
+end Somador_arch;
+
+
+
+--PACOTES COM AMBOS COMPONENTES DESCRITOS
+library ieee;
+use ieee.std_logic_1164.all;
+
+package Somadores is
+
+component meioSomador is 
+	port(x, z : in std_logic;
+		y, t : out std_logic);
+end component meioSomador;
+
+component Somador is
+	port(x, z, w : in std_logic;
+		y, t : out std_logic);
+end component Somador;
+
+end package;
+
+
+
+--ROTINA PRINCIPAL DE CÓDIGO IMPLEMENTANDO O PACOTE E INSTANCIANDO OS COMPONENTES
+library ieee;
+use ieee.std_logic_1164.all;
+use work.Somadores.all;
+
+entity PacComp is
+	port(a, b : in std_logic_vector(7 downto 0);
+		y : out std_logic_vector(8 downto 0));
+end entity PacComp;
+
+architecture somadorByte_arch of PacComp is
+	signal t0, t1, t2, t3, t4, t5, t6, t7 : std_logic;
+begin 
+	
+		s0 : meioSomador port map(a(0), b(0), y(0), t0);
+	   s1 : Somador port map(a(1), b(1), t0, y(1), t1);
+		s2 : Somador port map(a(2), b(2), t1, y(2), t2);
+		s3 : Somador port map(a(3), b(3), t2, y(3), t3);
+		s4 : Somador port map(a(4), b(4), t3, y(4), t4);
+		s5 : Somador port map(a(5), b(5), t4, y(5), t5);
+		s6 : Somador port map(a(6), b(6), t5, y(6), t6);
+		s7 : Somador port map(a(7), b(7), t6, y(7), y(8));
+	
+end somadorByte_arch;
