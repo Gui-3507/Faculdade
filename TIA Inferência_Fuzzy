@@ -1,0 +1,227 @@
+clc
+clear all
+close all
+
+% Universo de discurso e conjuntos Fuzzy
+t = linspace(800,1200,500);
+v = linspace(2,12,500);
+p = linspace(4,12,500);
+tb = [];
+tm = [];
+ta = [];
+vp = [];
+vm = [];
+vg = [];
+pb = [];
+pm = [];
+pa = [];
+
+% Definição conjuntos Fuzzy
+% Temperatura, Volume, Pressão
+for i=1:500
+  if t(i) <= 900
+    tb(i) = 1;
+  endif
+  if 900 < t(i) && t(i) <=1000
+    tb(i) = (1000-t(i))/(1000-900);
+    tm(i) = (t(i)-900)/(1000-900);
+  endif
+  if 1000 < t(i) && t(i) <=1100
+    tm(i) = (1100-t(i))/(1100-1000);
+    ta(i) = (t(i)-1000)/(1100-1000);
+    tb(i) = 0;
+  endif
+  if 1100 < t(i) && t(i) <= 1200
+    ta(i) = 1;
+    tm(i) = 0;
+    tb(i) = 0;
+  endif
+
+  if v(i) <= 4.5
+    vp(i) = 1;
+  endif
+  if 4.5 < v(i) && v(i) <= 7
+    vp(i) = (7-v(i))/(7-4.5);
+    vm(i) = (v(i)-4.5)/(7-4.5);
+  endif
+  if 7 < v(i) && v(i) <= 9.5
+    vm(i) = (9.5-v(i))/(9.5-7);
+    vg(i) = (v(i)-7)/(9.5-7);
+    vp(i) = 0;
+  endif
+  if 9.5 < v(i) && v(i) <= 12
+    vg(i) = 1;
+    vm(i) = 0;
+    vp(i) = 0;
+  endif
+
+  if p(i) <= 5
+    pb(i) = 1;
+  endif
+  if 5 < p(i) && p(i) <= 8
+    pb(i) = (8-p(i))/(8-5);
+  endif
+  if 6 < p(i) && p(i) <= 8
+    pm(i) = (p(i)-6)/(8-6);
+  endif
+  if 8 < p(i) && p(i) <= 10
+    pm(i) = (10-p(i))/(10-8);
+    pb(i) = 0;
+  endif
+  if 8 < p(i) && p(i) <= 11
+    pa(i) = (p(i)-8)/(11-8);
+    pb(i) = 0;
+  endif
+  if 11 < p(i) && p(i) <= 12
+    pa(i) = 1;
+    pm(i) = 0;
+    pb(i) = 0;
+  endif
+
+end
+
+subplot(4,1,1);plot(t,tb);hold on;plot(t,tm);hold on;plot(t,ta);title('Temperatura')
+subplot(4,1,2);plot(v,vp);hold on;plot(v,vm);hold on;plot(v,vg);title('Volume')
+subplot(4,1,3);plot(p,pb);hold on;plot(p,pm);hold on;plot(p,pa);title('Pressão')
+
+% Determinação das regras %
+%Encontra a posica da temperatura de pressao
+vet=[];
+a = 0;
+b = 0;
+x = input('Insira um valor de temperatura: ');
+disp('')
+y = input('Insira um valor de volume: ');
+disp('')
+for i=1:500
+   if t(i) <= x
+      a = a + 1;
+   endif
+   if v(i) <= y
+     b = b + 1;
+   endif
+end
+
+
+
+% Regra 1
+Regra1_t = tb(a);
+Regra1_v = vp(b);
+Regra1_min = min(Regra1_t,Regra1_v);
+
+% Regra 2
+Regra2_t = tm(a);
+Regra2_v = vp(b);
+Regra2_min = min(Regra2_t,Regra2_v);
+
+% Regra 3
+Regra3_t = ta(a);
+Regra3_v = vp(b);
+Regra3_min = min(Regra3_t,Regra3_v);
+
+% Regra 4
+Regra4_t = tb(a);
+Regra4_v = vm(b);
+Regra4_min = min(Regra4_t,Regra4_v);
+
+% Regra 5
+Regra5_t = tm(a);
+Regra5_v = vm(b);
+Regra5_min = min(Regra5_t,Regra5_v);
+
+% Regra 6
+Regra6_t = ta(a);
+Regra6_v = vm(b);
+Regra6_min = min(Regra6_t,Regra6_v);
+
+% Regra 7
+Regra7_t = tb(a);
+Regra7_v = vg(b);
+Regra7_min = min(Regra7_t,Regra7_v);
+
+% Regra 8
+Regra8_t = tm(a);
+Regra8_v = vg(b);
+Regra8_min = min(Regra8_t,Regra8_v);
+
+% Regra 9
+Regra9_t = ta(a);
+Regra9_v = vg(b);
+Regra9_min = min(Regra9_t,Regra9_v);
+
+% Composição
+alfa1 = max(max(Regra1_min,Regra2_min),Regra4_min);
+alfa2 = max(max(Regra3_min,Regra5_min),Regra7_min);
+alfa3 = max(max(Regra6_min,Regra8_min),Regra9_min);
+min_Pb = min(alfa1,pb);
+min_Pm = min(alfa2,pm);
+min_Pa = min(alfa3,pa);
+Resposta = max(min_Pa,max(min_Pb,min_Pm));
+subplot(4,1,4);plot(p,Resposta);title('Resposta')
+
+% Mostra qual regra estará ativa
+
+if  Regra1_min != 0
+  disp('Regra 1 Ativa')
+  disp('')
+end
+
+if  Regra2_min != 0
+  disp('Regra 2 Ativa')
+  disp('')
+end
+
+if  Regra3_min != 0
+  disp('Regra 3 Ativa')
+  disp('')
+end
+
+if  Regra4_min != 0
+  disp('Regra 4 Ativa')
+  disp('')
+end
+
+if  Regra5_min != 0
+  disp('Regra 5 Ativa')
+  disp('')
+end
+
+if  Regra6_min != 0
+  disp('Regra 6 Ativa')
+  disp('')
+end
+
+if  Regra7_min != 0
+  disp('Regra 7 Ativa')
+  disp('')
+end
+
+if  Regra8_min != 0
+  disp('Regra 8 Ativa')
+  disp('')
+end
+
+if  Regra9_min != 0
+  disp('Regra 9 Ativa')
+  disp('')
+end
+
+%Respota Fuzzy
+num = 0;
+den = 0;
+num = sum(Resposta.*p);
+den = sum(Resposta);
+Saida = num/den
+
+
+
+
+
+
+
+
+
+
+
+
+
