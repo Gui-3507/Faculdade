@@ -1,0 +1,199 @@
+clc
+clear all
+close all
+
+num_ger = 100;
+num_max = 2;
+num_min = -1;
+tax_cross = 0.7;
+tax_mut = 0.01;
+tam_pop = 100;
+tam_ind = 24;
+geracao = 1;
+populacao = [];
+rol = [];
+resultado = [];
+aval = @(x) x.*sin(10*pi.*x) + 1;
+eixo_x = linspace(-1,2,1000);
+eixo_y = aval(eixo_x);
+eixo_x_1 = [];
+eixo_x_2 = [];
+n = 1;
+
+
+
+% Cria a primeira população
+for i=1:100
+
+  populacao(i,:) = randi([0, 1], 1, tam_ind);
+
+  % Condição que garante 2 como num_max
+  if populacao(i,2) == 1
+    for z=3:24
+      populacao(i,z) = 0;
+    endfor
+    populacao(i,1) = 0;
+  endif
+
+  % Condição que garante -1 como num_min
+  if populacao(i,3) == 1 && populacao(i,1) == 1
+    for z=4:24
+      populacao(i,z) = 0;
+    endfor
+  endif
+
+endfor
+
+% Avaliando a primeira população
+
+% Transformando para número decimal
+  for j=1:tam_pop
+
+    sinal = num2str(populacao(j,1));
+    parteInteira = num2str(populacao(j,2:3));
+    parteFracionaria = num2str(populacao(j,4:end));
+    parteInteiraDecimal = bin2dec(parteInteira);
+    frac = 0;
+    for l=1:20
+      frac = frac + populacao(j,l+3)*(2^-l);
+    end
+    parteFracionariaDecimal = sum(frac);
+    valorAbsoluto = parteInteiraDecimal + parteFracionariaDecimal;
+    if sinal == '1'
+        valorAbsoluto = -valorAbsoluto;
+    end
+    x = valorAbsoluto;
+    eixo_x_1(j) = x;
+
+    % Avaliando o valor
+    resultado(j) = aval(x);
+
+  endfor
+% Plota o gráfico da função para a primeria populacao
+subplot(2,1,1); plot(eixo_x,eixo_y);hold on;scatter(eixo_x_1,resultado, 10,'r');title('Primeira Geração');
+
+
+% Para todas as gerações
+for i=1:100
+
+  % Avaliando a geração
+  n = 1;
+  for j=1:tam_pop
+
+    % Transformando para número decimal
+    sinal = num2str(populacao(j,1));
+    parteInteira = num2str(populacao(j,2:3));
+    parteFracionaria = num2str(populacao(j,4:end));
+    parteInteiraDecimal = bin2dec(parteInteira);
+    frac = 0;
+    for l=1:20
+      frac = frac + populacao(j,l+3)*(2^-l);
+    end
+    parteFracionariaDecimal = sum(frac);
+    valorAbsoluto = parteInteiraDecimal + parteFracionariaDecimal;
+    if sinal == '1'
+        valorAbsoluto = -valorAbsoluto;
+    end
+    x = valorAbsoluto;
+    eixo_x_2(j) = x;
+
+    % Avaliando o valor
+    resultado(j) = aval(x);
+
+  endfor
+
+  % Criando a roleta viciada
+  probabilidade = resultado/ sum(resultado);
+  rol = zeros(size(populacao));
+  acumulador = 0;
+
+  for k=1:length(populacao)
+    rol(k) = acumulador + probabilidade(k);
+    acumulador = rol(k);
+  endfor
+
+  % Aplicando a taxa de crossover
+  for z=1:50
+  roleta = rand();
+  pai_um = populacao(find(rol >= roleta, 1, 'first'),:);
+  roleta = rand();
+  pai_dois = populacao(find(rol >= roleta, 1, 'first'),:);
+    if rand() <= tax_cross
+      corte = randi(tam_ind);
+      populacao(z,:) = horzcat(pai_um(1:corte), pai_dois(corte+1:end));
+      populacao(z+50,:) = horzcat(pai_dois(1:corte), pai_um(corte+1:end));
+
+      % Condições para não violar as regras de formação dos indivíduos
+
+      % Condição que garante 2 como num_max para o filho 1
+      if populacao(z,2) == 1
+        for d=3:24
+          populacao(z,d) = 0;
+        endfor
+        populacao(z,1) = 0;
+      endif
+
+      % Condição que garante -1 como num_min para o filho 1
+      if populacao(z,3) == 1 && populacao(z,1) == 1
+        for d=4:24
+          populacao(z,d) = 0;
+        endfor
+      endif
+
+       % Condição que garante 2 como num_max para o filho 2
+      if populacao(z+50,2) == 1
+        for d=3:24
+          populacao(z+50,d) = 0;
+        endfor
+        populacao(z+50,1) = 0;
+      endif
+
+      % Condição que garante -1 como num_min para o filho 2
+      if populacao(z+50,3) == 1 && populacao(z+50,1) == 1
+        for d=4:24
+          populacao(z+50,d) = 0;
+        endfor
+      endif
+
+    else
+    populacao(z,:) = pai_um;
+    populacao(z+50,:) = pai_dois;
+    endif
+  endfor
+
+  % Aplicando a mutação
+  for z=1:50
+    for t=1:24
+      if rand() <= tax_mut
+        if populacao(z,t) == 1
+          populacao(z,t) = 0;
+        else
+          populacao(z,t) = 1;
+        endif
+
+        % Condições para não violar as regras de formação dos indivíduos
+
+        % Condição que garante 2 como num_max
+        if populacao(z,2) == 1
+          for d=3:24
+            populacao(z,d) = 0;
+          endfor
+          populacao(z,1) = 0;
+        endif
+
+        % Condição que garante -1 como num_min
+        if populacao(z,3) == 1 && populacao(z,1) == 1
+          for d=4:24
+            populacao(z,d) = 0;
+          endfor
+        endif
+
+      else
+        populacao(z,t) = populacao(z,t);
+      endif
+    endfor
+  endfor
+
+endfor
+
+subplot(2,1,2); plot(eixo_x,eixo_y); hold on;scatter(eixo_x_2,resultado, 10,'r');title('Ultima Geração')
