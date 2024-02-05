@@ -1,0 +1,18 @@
+clc
+close all
+clear all
+
+pkg load control;
+
+% ---- Controle Proporcional Integral ----
+
+s = tf('s');
+K = 6.895;
+G = (s+15)/((s+1)*(s+3)*(s+20));
+Tsc = feedback(K*G,1);
+Kp = 9;
+Ki = 7.3;
+PI = Kp + (Ki/s);
+Tc = feedback(PI*G,1);
+subplot(2,1,1); step(Tsc); ylabel('Tsc'); title('Sistema Sem Compensação');
+subplot(2,1,2); step(Tc); ylabel('Tc'); title('Sistema Compensado');
