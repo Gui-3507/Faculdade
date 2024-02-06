@@ -1,0 +1,21 @@
+clc
+close all
+clear all
+
+pkg load control;
+
+% ---- Controlador Atraso e Avanlo de Fase ----
+
+s = tf('s')
+K = 218.5763;
+G = 1/(s*(s+5)*(s+11));
+Tsc = feedback(K*G,1);
+Kc = 4800;
+Zc1 = 4.75;
+Pc1 = 53.937;
+Zc2 = 0.01596
+Pc2 = 0.001;
+Av_At = Kc*((s+Zc1)*(s+Zc2))/((s+Pc1)*(s+Pc2));
+Tc = feedback(Av_At*G,1);
+subplot(2,1,1); step(Tsc,4,0.01); ylabel('Tsc'); title('Sistema Sem Compensação');
+subplot(2,1,2); step(Tc,4,0.01); ylabel('Tc'); title('Sistema Compensado');
