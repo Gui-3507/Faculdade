@@ -1,0 +1,22 @@
+clc
+clear all
+close all
+
+pkg load control;
+
+% ---- Controlador Inregral Derivativo ----
+
+s = tf('s')
+K = 0.0823;
+G = 0.7/((s^2 + 1.7*s + 0.25)*(s+0.4));
+H = 0.5/(s+0.5);
+Tsc = feedback(K*G,H);
+Kp = 0.32;
+Ki = 0.03;
+Kd = 0.701;
+PID = Kp + Ki/s + Kd*s;
+Tc = feedback(PID*G,H);
+subplot(2,1,1); step(Tsc); ylabel('Tsc'); title('Sistema Sem Compensação');
+subplot(2,1,2); step(Tc); ylabel('Tc'); title('Sistema Compensado');
+
+
