@@ -1,0 +1,19 @@
+clc
+clear all
+close all
+
+pkg load control;
+
+% ---- Controlador Proporcional Derivativo ----
+
+s = tf('s')
+K = 1.11;
+G = (0.02*70)/((4*s+1)*(50*s+1));
+H = 1/(12*s+1);
+Tsc = feedback(K*G,H);
+Kp = 1.48;
+Kd = 9.738;
+PD = Kp + Kd*s;
+Tc = feedback(PD*G,H);
+subplot(2,1,1); step(Tsc); ylabel('Tsc'); title('Sistema Sem Compensação');
+subplot(2,1,2); step(Tc); ylabel('Tc'); title('Sistema Compensado');
